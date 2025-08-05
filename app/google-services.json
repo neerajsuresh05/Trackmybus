@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "446570682903",
+    "project_id": "college-bus-tracker-b504a",
+    "storage_bucket": "college-bus-tracker-b504a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446570682903:android:91c88f44569dfda1385a52",
+        "android_client_info": {
+          "package_name": "com.example.collegebustracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVJtCEJ9AniKEdly7Lh8tsFj_L09zgbHg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

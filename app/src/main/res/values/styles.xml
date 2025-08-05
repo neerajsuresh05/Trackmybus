@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CollegeTracker" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Customize your theme colors here -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/secondary_color</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <!-- Add more items as needed -->
+    </style>
+</resources>
