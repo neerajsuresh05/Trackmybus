@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)  // This setting disallows project repositories
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "College Bus Tracker"
+include ':app'
