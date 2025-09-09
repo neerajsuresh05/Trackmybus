@@ -1,65 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center">
+    android:layout_height="match_parent">
 
+    <!-- Background Image -->
     <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/ic_bus"
-        android:contentDescription="Bus Icon"
-        android:layout_marginBottom="32dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="College Bus Tracker"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="@color/primary_color"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Track your college bus in real-time"
-        android:textSize="16sp"
-        android:textColor="@color/text_secondary"
-        android:layout_marginBottom="48dp"
-        android:textAlignment="center" />
-
-    <Button
-        android:id="@+id/btnDriver"
+        android:id="@+id/bgImage"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="I'm a Driver"
-        android:textSize="18sp"
-        android:backgroundTint="@color/primary_color"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/college_background"
+        android:contentDescription="TrackMyBus App" />
 
-    <Button
-        android:id="@+id/btnStudent"
+    <!-- Dark overlay -->
+    <View
+        android:id="@+id/darkOverlay"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="I'm a Student"
-        android:textSize="18sp"
-        android:backgroundTint="@color/secondary_color"
-        android:layout_marginBottom="32dp" />
+        android:layout_height="match_parent"
+        android:background="#CC000000" />
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="New User? Register here"
-        android:textSize="14sp"
-        android:textColor="@color/primary_color"
-        android:backgroundTint="@android:color/transparent"
-        android:layout_gravity="center_horizontal" />
+    <!-- Main content -->
+    <LinearLayout
+        android:id="@+id/mainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
 
+        <!-- Bus Icon with Circular Background -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal">
 
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:src="@drawable/circle_white_bg"
+                android:contentDescription="TrackMyBus App" />
 
-</LinearLayout>
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_bus"
+                app:tint="@color/primary_color"
+                android:layout_gravity="center"
+                android:contentDescription="TrackMyBus App" />
+        </FrameLayout>
+
+        <!-- App Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TrackMyBus"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@color/secondary_color"
+            android:fontFamily="sans-serif-medium"
+            android:layout_gravity="center_horizontal"
+            android:shadowColor="#80000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="3"
+            android:layout_marginBottom="8dp" />
+
+        <!-- App Subtitle -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Find your bus easily"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="32dp" />
+
+        <!-- I'm a Driver Button -->
+        <TextView
+            android:id="@+id/tvDriver"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="I'm a Driver"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal"
+            android:padding="12dp"
+            android:background="@drawable/btn_gradient_secondary"
+            android:gravity="center" />
+
+        <!-- I'm a Student Button -->
+        <TextView
+            android:id="@+id/tvStudent"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="I'm a Student"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal"
+            android:padding="12dp"
+            android:background="@drawable/btn_gradient_secondary"
+            android:gravity="center" />
+
+        <!-- Register Text -->
+        <TextView
+            android:id="@+id/btnRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="Register Now"
+            android:textColor="@color/primary_color"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed" />
+    </LinearLayout>
+</RelativeLayout>

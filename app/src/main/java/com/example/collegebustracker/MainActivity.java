@@ -2,7 +2,7 @@ package com.example.collegebustracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -10,7 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnDriver, btnStudent, btnRegister;
+    private TextView btnDriver, btnStudent, btnRegister;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        btnDriver = findViewById(R.id.btnDriver);
-        btnStudent = findViewById(R.id.btnStudent);
+        btnDriver = findViewById(R.id.tvDriver);
+        btnStudent = findViewById(R.id.tvStudent);
         btnRegister = findViewById(R.id.btnRegister);
     }
 
@@ -53,4 +53,3 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
-
