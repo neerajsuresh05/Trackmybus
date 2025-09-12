@@ -97,7 +97,7 @@
                         android:fontFamily="sans-serif" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Login Button -->
+                <!-- Login Button (TextView styled) -->
                 <TextView
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
@@ -120,9 +120,9 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="16dp"/>
 
-                <!-- Register Link - Fixed -->
+                <!-- Register Link -->
                 <TextView
-                    android:id="@+id/tvRegisterLink"
+                    android:id="@+id/tvRegister"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/register_link_underlined"

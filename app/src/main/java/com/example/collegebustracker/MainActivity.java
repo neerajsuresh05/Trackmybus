@@ -2,51 +2,40 @@ package com.example.collegebustracker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView btnDriver, btnStudent, btnRegister;
-
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private TextView tvDriver, tvStudent, btnRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize Firebase Auth and Firestore once
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-
-        initViews();
-        setupClickListeners();
-    }
-
-    private void initViews() {
-        btnDriver = findViewById(R.id.tvDriver);
-        btnStudent = findViewById(R.id.tvStudent);
+        // ✅ Match IDs with your XML
+        tvDriver = findViewById(R.id.tvDriver);
+        tvStudent = findViewById(R.id.tvStudent);
         btnRegister = findViewById(R.id.btnRegister);
-    }
 
-    private void setupClickListeners() {
-        btnDriver.setOnClickListener(v -> {
+        // ✅ Driver login button click
+        tvDriver.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.putExtra("userType", "driver");
+            intent.putExtra("userType", "driver"); // send info to login screen
             startActivity(intent);
         });
 
-        btnStudent.setOnClickListener(v -> {
+        // ✅ Student login button click
+        tvStudent.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            intent.putExtra("userType", "student");
+            intent.putExtra("userType", "student"); // send info to login screen
             startActivity(intent);
         });
 
+        // ✅ Register click
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
             startActivity(intent);

@@ -108,6 +108,15 @@
                         android:layout_marginStart="24dp"/>
                 </RadioGroup>
 
+                <!-- Progress Bar (Added) -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"/>
+
                 <!-- Register Button -->
                 <Button
                     android:id="@+id/btnRegister"
@@ -121,7 +130,7 @@
 
                 <!-- Login Link -->
                 <TextView
-                    android:id="@+id/tvLoginLink"
+                    android:id="@+id/tvLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Already have an account? Login"
@@ -133,7 +142,6 @@
                     android:focusable="true"
                     android:layout_marginTop="12dp"/>
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
