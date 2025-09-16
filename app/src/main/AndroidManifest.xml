@@ -57,7 +57,8 @@
         <activity android:name=".LoginActivity" android:exported="false" />
 
         <!-- Bus tracking screen -->
-        <activity android:name=".BusTrackingActivity" android:exported="false" />
+        <activity android:name=".DriverBusTrackingActivity" android:exported="false"/>
+        <activity android:name=".StudentBusTrackingActivity" android:exported="false"/>
 
         <!-- Background service for location tracking -->
         <service

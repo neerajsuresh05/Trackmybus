@@ -86,11 +86,18 @@ public class LoginActivity extends AppCompatActivity {
                                         editor.apply();
 
                                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(LoginActivity.this, BusTrackingActivity.class);
-                                        intent.putExtra("userType", userType);
+                                        Intent intent;
+                                        if ("driver".equalsIgnoreCase(role)) {
+                                            intent = new Intent(LoginActivity.this, DriverBusTrackingActivity.class);
+                                        } else if ("student".equalsIgnoreCase(role)) {
+                                            intent = new Intent(LoginActivity.this, StudentBusTrackingActivity.class);
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Unknown role: " + role, Toast.LENGTH_SHORT).show();
+                                            mAuth.signOut();
+                                            return;
+                                        }
                                         startActivity(intent);
                                         finish();
-
                                     } else {
                                         Toast.makeText(LoginActivity.this, "User data not found. Contact admin.", Toast.LENGTH_LONG).show();
                                         mAuth.signOut();

@@ -71,8 +71,16 @@ public class RegisterActivity extends AppCompatActivity {
                                 .set(userData)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                    // Optionally auto-login and direct route
+                                    Intent intent;
+                                    if ("driver".equals(role)) {
+                                        intent = new Intent(RegisterActivity.this, DriverBusTrackingActivity.class);
+                                    } else {
+                                        intent = new Intent(RegisterActivity.this, StudentBusTrackingActivity.class);
+                                    }
+                                    startActivity(intent);
                                     finish();
+
                                 })
                                 .addOnFailureListener(e ->
                                         Toast.makeText(this, "Failed to save user info: " + e.getMessage(), Toast.LENGTH_LONG).show()
