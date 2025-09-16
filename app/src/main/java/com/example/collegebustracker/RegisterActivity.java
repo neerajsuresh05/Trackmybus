@@ -3,60 +3,64 @@ package com.example.collegebustracker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.*;
-import com.google.firebase.firestore.*;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Map;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
-    private TextInputEditText etEmail, etPassword;
-    private RadioGroup rgUserRole;
-    private Button btnRegister;
+
+    private EditText etEmail, etPassword;
+    private TextView btnRegister, tvLogin;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
-        rgUserRole = findViewById(R.id.rgUserRole);
-        btnRegister = findViewById(R.id.btnRegister);
-        progressBar = findViewById(R.id.progressBar);
+        btnRegister = findViewById(R.id.btnRegister);  // TextView is okay
+        tvLogin = findViewById(R.id.tvLogin);
+        progressBar = findViewById(R.id.progressBar); // FIX: Make sure you add this in XML
+        mAuth = FirebaseAuth.getInstance();
 
         btnRegister.setOnClickListener(v -> registerUser());
+
+        tvLogin.setOnClickListener(v -> {
+            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+            finish();
+        });
     }
 
     private void registerUser() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
-        int selectedRoleId = rgUserRole.getCheckedRadioButtonId();
-        RadioButton selectedRadioButton = findViewById(selectedRoleId);
-        String role = selectedRadioButton.getText().toString().toLowerCase();
 
-        if (!role.equals("driver") && !role.equals("student")) {
-            Toast.makeText(this, "Only driver or student registration allowed", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty()) {
+            etEmail.setError("Email required");
+            etEmail.requestFocus();
             return;
         }
-        if (email.isEmpty() || password.isEmpty() || password.length() < 6) {
-            Toast.makeText(this, "Enter valid email and password (min 6 chars)", Toast.LENGTH_SHORT).show();
+
+        if (password.isEmpty()) {
+            etPassword.setError("Password required");
+            etPassword.requestFocus();
             return;
         }
+
         progressBar.setVisibility(View.VISIBLE);
-        btnRegister.setEnabled(false);
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
+                .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
+
                     btnRegister.setEnabled(true);
                     if(task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
@@ -85,11 +89,15 @@ public class RegisterActivity extends AppCompatActivity {
                                 .addOnFailureListener(e ->
                                         Toast.makeText(this, "Failed to save user info: " + e.getMessage(), Toast.LENGTH_LONG).show()
                                 );
+
+                    if (task.isSuccessful()) {
+                        Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        finish();
+
                     } else {
-                        Toast.makeText(this, "Registration failed: " +
-                                (task.getException() != null ? task.getException().getMessage() : "Unknown"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, "Registration Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
 }
-
