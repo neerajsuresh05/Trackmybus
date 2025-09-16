@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/controlPanel"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="16dp"
+        android:background="#CCFFFFFF">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Idle"
+            android:textStyle="bold"
+            android:textColor="@color/primary_color" />
+        <TextView
+            android:id="@+id/tvLocationInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Coordinates: Not available"
+            android:layout_marginTop="5dp" />
+        <Button
+            android:id="@+id/btnFindBus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Find Bus"
+            android:layout_marginTop="10dp" />
+        <Button
+            android:id="@+id/btnEmergency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Emergency"
+            android:layout_marginTop="6dp" />
+    </LinearLayout>
+</RelativeLayout>

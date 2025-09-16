@@ -69,6 +69,30 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+
+                                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                        Intent intent;
+                                        if ("driver".equalsIgnoreCase(role)) {
+                                            intent = new Intent(LoginActivity.this, DriverBusTrackingActivity.class);
+                                        } else if ("student".equalsIgnoreCase(role)) {
+                                            intent = new Intent(LoginActivity.this, StudentBusTrackingActivity.class);
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Unknown role: " + role, Toast.LENGTH_SHORT).show();
+                                            mAuth.signOut();
+                                            return;
+                                        }
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "User data not found. Contact admin.", Toast.LENGTH_LONG).show();
+                                        mAuth.signOut();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(LoginActivity.this, "Failed to retrieve user info", Toast.LENGTH_LONG).show();
+                                    mAuth.signOut();
+                                });
+
         progressBar.setVisibility(View.VISIBLE);
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -78,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, userType + " Login Successful", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, BusTrackingActivity.class));
                         finish();
+
                     } else {
                         Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }

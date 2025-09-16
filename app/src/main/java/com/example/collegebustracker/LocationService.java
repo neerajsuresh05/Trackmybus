@@ -57,7 +57,7 @@ public class LocationService extends Service {
     }
 
     private Notification createNotification() {
-        Intent notifIntent = new Intent(this, BusTrackingActivity.class);
+        Intent notifIntent = new Intent(this, DriverBusTrackingActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifIntent, PendingIntent.FLAG_IMMUTABLE);
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
