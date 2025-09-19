@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -18,7 +19,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView btnLogin, tvRegister, tvTitle;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
-    private String userType = "driver"; // default value
+    private String userType = "driver"; // default
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +35,19 @@ public class LoginActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tvTitle);
         mAuth = FirebaseAuth.getInstance();
 
-        // ✅ Get userType from MainActivity
+        // Get userType from MainActivity or elsewhere
         userType = getIntent().getStringExtra("userType");
         if (userType != null && userType.equalsIgnoreCase("student")) {
             tvTitle.setText("Student Login");
         } else {
             tvTitle.setText("Driver Login");
+            userType = "driver"; // fallback
         }
 
-        // ✅ Handle Login click
+        // Handle Login click
         btnLogin.setOnClickListener(v -> loginUser());
 
-        // ✅ Handle Register click (pass same userType forward)
+        // Handle Register click (pass userType forward)
         tvRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             intent.putExtra("userType", userType);
@@ -69,8 +71,24 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        progressBar.setVisibility(View.VISIBLE);
 
-                                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    progressBar.setVisibility(View.GONE);
+                    if (task.isSuccessful()) {
+                        String uid = mAuth.getCurrentUser().getUid();
+                        FirebaseFirestore.getInstance().collection("users").document(uid)
+                                .get()
+                                .addOnSuccessListener(doc -> {
+                                    if (doc.exists()) {
+                                        String role = doc.getString("role");
+                                        Boolean approved = doc.getBoolean("approved");
+                                        if (approved == null || !approved) {
+                                            Toast.makeText(LoginActivity.this, "Account awaiting admin approval.", Toast.LENGTH_LONG).show();
+                                            mAuth.signOut();
+                                            return;
+                                        }
                                         Intent intent;
                                         if ("driver".equalsIgnoreCase(role)) {
                                             intent = new Intent(LoginActivity.this, DriverBusTrackingActivity.class);
@@ -92,19 +110,8 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(LoginActivity.this, "Failed to retrieve user info", Toast.LENGTH_LONG).show();
                                     mAuth.signOut();
                                 });
-
-        progressBar.setVisibility(View.VISIBLE);
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    progressBar.setVisibility(View.GONE);
-                    if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, userType + " Login Successful", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, BusTrackingActivity.class));
-                        finish();
-
                     } else {
-                        Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Login Failed: " + (task.getException() == null ? "Unknown error" : task.getException().getMessage()), Toast.LENGTH_LONG).show();
                     }
                 });
     }
