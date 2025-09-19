@@ -1,7 +1,6 @@
 package com.example.collegebustracker;
 
 import android.Manifest;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,8 +18,8 @@ import com.google.android.gms.location.*;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
     private String busId;
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationCallback locationCallback;  // For removal
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +49,34 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         db = FirebaseFirestore.getInstance();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Get busId (from SharedPreferences or intent)
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        busId = prefs.getString("busId", "test_bus_001");
-
         tvStatus = findViewById(R.id.tvStatus);
         tvLocationInfo = findViewById(R.id.tvLocationInfo);
         btnStartStop = findViewById(R.id.btnStartStop);
         btnEmergency = findViewById(R.id.btnEmergency);
+
+        // Fetch assigned busId from Firestore for logged-in driver
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        busId = doc.getString("busId");
+                        if (busId != null && !busId.isEmpty()) {
+                            tvStatus.setText("Assigned Bus: " + busId);
+                            btnStartStop.setEnabled(true);
+                        } else {
+                            tvStatus.setText("No bus assigned.");
+                            btnStartStop.setEnabled(false);
+                        }
+                    } else {
+                        tvStatus.setText("User data not found.");
+                        btnStartStop.setEnabled(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    tvStatus.setText("Error fetching user data");
+                    btnStartStop.setEnabled(false);
+                });
 
         btnStartStop.setOnClickListener(v -> {
             if (isTracking) stopTracking();
@@ -78,7 +97,10 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         if (hasLocationPermission()) {
-            try { mMap.setMyLocationEnabled(true); } catch (SecurityException ignored) {}
+            try {
+                mMap.setMyLocationEnabled(true);
+            } catch (SecurityException ignored) {
+            }
         }
         LatLng defaultLoc = new LatLng(28.6139, 77.2090);  // Change as needed
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLoc, 16));
@@ -108,7 +130,8 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         if (!hasLocationPermission()) return;
 
         LocationRequest request = LocationRequest.create()
-                .setInterval(5000).setFastestInterval(3000)
+                .setInterval(5000)
+                .setFastestInterval(3000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
@@ -127,9 +150,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
             fusedLocationProviderClient.requestLocationUpdates(request, locationCallback, null);
         } catch (SecurityException e) {
             e.printStackTrace();
-            // Inform user or disable location-dependent features
         }
-
     }
 
     private void stopLocationUpdates() {
@@ -146,7 +167,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
 
         db.collection("buses")
                 .document(busId)
-                .set(Collections.singletonMap("lastLocation", locationMap), SetOptions.merge())
+                .set(Collections.singletonMap("lastLocation", locationMap), com.google.firebase.firestore.SetOptions.merge())
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated"))
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to update location", e));
     }

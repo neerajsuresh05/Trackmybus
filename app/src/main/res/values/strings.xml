@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">College Bus Tracker</string>
+    <string name="app_name">TrackMyBus</string>
     <string name="register_link_underlined"><u>Register Now</u></string>
 
 </resources>
