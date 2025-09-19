@@ -1,12 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <!-- Google Map -->
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- Overlay control panel -->
     <LinearLayout
         android:id="@+id/controlPanel"
         android:orientation="vertical"
@@ -22,19 +26,23 @@
             android:layout_height="wrap_content"
             android:text="Status: Idle"
             android:textStyle="bold"
-            android:textColor="@color/primary_color" />
+            android:textColor="#FF6200EE" />
+
         <TextView
             android:id="@+id/tvLocationInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Coordinates: Not available"
             android:layout_marginTop="5dp" />
+
         <Button
             android:id="@+id/btnFindBus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Find Bus"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:enabled="false" />
+
         <Button
             android:id="@+id/btnEmergency"
             android:layout_width="match_parent"

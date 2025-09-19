@@ -1,6 +1,5 @@
 package com.example.collegebustracker;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 
 import java.util.Map;
@@ -34,17 +34,41 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
         setContentView(R.layout.activity_student_bus_tracking);
 
         db = FirebaseFirestore.getInstance();
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        busId = prefs.getString("busId", "test_bus_001");
 
         tvStatus = findViewById(R.id.tvStatus);
         tvLocationInfo = findViewById(R.id.tvLocationInfo);
         btnFindBus = findViewById(R.id.btnFindBus);
         btnEmergency = findViewById(R.id.btnEmergency);
 
+        // Fetch assigned busId on student login
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("users").document(uid)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        busId = doc.getString("busId");
+                        if (busId != null && !busId.isEmpty()) {
+                            tvStatus.setText("Your Bus: " + busId);
+                            btnFindBus.setEnabled(true);
+                        } else {
+                            tvStatus.setText("No bus assigned.");
+                            btnFindBus.setEnabled(false);
+                        }
+                    } else {
+                        tvStatus.setText("User data not found.");
+                        btnFindBus.setEnabled(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    tvStatus.setText("Error fetching user data");
+                    btnFindBus.setEnabled(false);
+                });
+
         btnFindBus.setOnClickListener(v -> {
-            subscribeToBusLocation(busId);
-            updateStatus("Searching for bus...");
+            if (busId != null) {
+                subscribeToBusLocation(busId);
+                updateStatus("Searching for bus...");
+            }
         });
 
         btnEmergency.setOnClickListener(v ->
