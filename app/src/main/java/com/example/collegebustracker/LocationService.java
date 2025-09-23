@@ -1,5 +1,6 @@
 package com.example.collegebustracker;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,14 +13,13 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.location.*;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +27,7 @@ public class LocationService extends Service {
 
     private static final String CHANNEL_ID = "bus_tracker_channel";
     private static final int NOTIF_ID = 1;
+    private static final String TAG = "LocationService";
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
@@ -50,7 +51,13 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        busId = intent.getStringExtra("busId"); // Provided by Activity!
+        busId = intent.getStringExtra("busId");
+        if (busId == null) {
+            Log.e(TAG, "busId is null, service cannot proceed");
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        Log.d(TAG, "Starting with busId: " + busId);
         startForeground(NOTIF_ID, createNotification());
         startLocationUpdates();
         return START_STICKY;
@@ -78,6 +85,13 @@ public class LocationService extends Service {
     }
 
     private void startLocationUpdates() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "Location permission denied, stopping service");
+            stopSelf();
+            return;
+        }
+
         LocationRequest req = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
                 .setWaitForAccurateLocation(false)
                 .build();
@@ -92,27 +106,33 @@ public class LocationService extends Service {
             }
         };
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            stopSelf();
-            return;
-        }
         fusedLocationClient.requestLocationUpdates(req, locationCallback, Looper.getMainLooper());
     }
 
     private void sendLocationToFirestore(double latitude, double longitude) {
-        if (busId == null) return;
+        if (busId == null) {
+            Log.e(TAG, "busId is null, cannot upload location");
+            return;
+        }
         Map<String, Object> loc = new HashMap<>();
         loc.put("latitude", latitude);
         loc.put("longitude", longitude);
         loc.put("timestamp", System.currentTimeMillis());
+
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("lastLocation", loc);
+
         db.collection("buses").document(busId)
-                .set(Collections.singletonMap("lastLocation", loc), SetOptions.merge());
+                .update(updateMap)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated for busId: " + busId))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to update location: " + e.getMessage(), e));
     }
 
     @Nullable
     @Override
-    public IBinder onBind(Intent intent) { return binder; }
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
 
     @Override
     public void onDestroy() {
@@ -122,5 +142,3 @@ public class LocationService extends Service {
         }
     }
 }
-
-

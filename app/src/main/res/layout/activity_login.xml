@@ -57,7 +57,6 @@
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginBottom="24dp" />
 
-                <!-- Email Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -74,8 +73,11 @@
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress"
                         android:padding="12dp"
-                        android:fontFamily="sans-serif" />
+                        android:fontFamily="sans-serif"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#99000000" />
                 </com.google.android.material.textfield.TextInputLayout>
+
 
                 <!-- Password Input -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -94,7 +96,10 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
                         android:padding="12dp"
-                        android:fontFamily="sans-serif" />
+                        android:fontFamily="sans-serif"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#99000000"/>
+
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Login Button (TextView styled) -->

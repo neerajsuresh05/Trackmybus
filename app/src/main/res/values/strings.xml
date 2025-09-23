@@ -1,5 +1,30 @@
 <resources>
     <string name="app_name">TrackMyBus</string>
     <string name="register_link_underlined"><u>Register Now</u></string>
-
+    <string name="status_assigned_bus">Assigned Bus: %1$s</string>
+    <string name="status_no_bus">No bus assigned.</string>
+    <string name="status_tracking_active">Tracking active</string>
+    <string name="status_tracking_stopped">Tracking stopped</string>
+    <string name="status_user_not_found">User data not found.</string>
+    <string name="status_error_fetching_user">Error fetching user data</string>
+    <string name="start_tracking">Start Tracking</string>
+    <string name="stop_tracking">Stop Tracking</string>
+    <string name="tracking_started">Tracking started</string>
+    <string name="tracking_stopped">Tracking stopped</string>
+    <string name="emergency_feature_soon">Emergency reporting coming soon.</string>
+    <string name="location_format">Latitude: %.5f\nLongitude: %.5f</string>
+    <string name="user_not_authenticated">User not authenticated</string>
+    <string name="your_bus_format">Your Bus: %s</string>
+    <string name="no_bus_assigned">No bus assigned.</string>
+    <string name="user_data_not_found">User data not found.</string>
+    <string name="error_fetching_user_data">Error fetching user data</string>
+    <string name="searching_for_bus">Searching for bus…</string>
+    <string name="emergency_feature_coming_soon">Emergency feature coming soon.</string>
+    <string name="error_tracking_bus">Error tracking bus location</string>
+    <string name="bus_marker_title">Bus</string>
+    <string name="bus_found">Bus location found</string>
+    <string name="bus_tracking_ongoing">Bus Tracking Ongoing</string>
+    <string name="tracking_enabled_for_bus">Tracking enabled for bus: %s</string>
+    <string name="bus_tracker_channel_name">Bus Tracker</string>
+    <string name="bus_tracker_channel_description">Notifications for bus location tracking service</string>
 </resources>
