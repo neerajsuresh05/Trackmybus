@@ -1,6 +1,7 @@
 package com.example.collegebustracker;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,7 +22,6 @@ import com.google.android.gms.maps.model.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +39,6 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
     private String busId;
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +113,9 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         isTracking = true;
         btnStartStop.setText("Stop Tracking");
         updateStatus("Tracking active");
-        startLocationUpdates();
+        Intent serviceIntent = new Intent(this, LocationService.class);
+        serviceIntent.putExtra("busId", busId);
+        startService(serviceIntent);
         Toast.makeText(this, "Tracking started", Toast.LENGTH_SHORT).show();
     }
 
@@ -122,54 +123,8 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         isTracking = false;
         btnStartStop.setText("Start Tracking");
         updateStatus("Tracking stopped");
-        stopLocationUpdates();
+        stopService(new Intent(this, LocationService.class));
         Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
-    }
-
-    private void startLocationUpdates() {
-        if (!hasLocationPermission()) return;
-
-        LocationRequest request = LocationRequest.create()
-                .setInterval(5000)
-                .setFastestInterval(3000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult result) {
-                Location location = result.getLastLocation();
-                if (location != null) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    uploadToFirestore(lat, lng);
-                    updateMapMarker(lat, lng);
-                }
-            }
-        };
-        try {
-            fusedLocationProviderClient.requestLocationUpdates(request, locationCallback, null);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void stopLocationUpdates() {
-        if (locationCallback != null)
-            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-    }
-
-    private void uploadToFirestore(double latitude, double longitude) {
-        if (busId == null) return;
-        Map<String, Object> locationMap = new HashMap<>();
-        locationMap.put("latitude", latitude);
-        locationMap.put("longitude", longitude);
-        locationMap.put("timestamp", System.currentTimeMillis());
-
-        db.collection("buses")
-                .document(busId)
-                .set(Collections.singletonMap("lastLocation", locationMap), com.google.firebase.firestore.SetOptions.merge())
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated"))
-                .addOnFailureListener(e -> Log.e(TAG, "Failed to update location", e));
     }
 
     private void updateMapMarker(double latitude, double longitude) {
@@ -204,6 +159,8 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopLocationUpdates();
+        if (isTracking) {
+            stopService(new Intent(this, LocationService.class));
+        }
     }
 }

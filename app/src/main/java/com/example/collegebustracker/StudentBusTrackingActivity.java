@@ -98,12 +98,24 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
                     }
 
                     if (documentSnapshot != null && documentSnapshot.exists()) {
-                        Map<String, Object> loc = (Map<String, Object>) documentSnapshot.get("lastLocation");
-                        if (loc != null) {
-                            double lat = ((Number) loc.get("latitude")).doubleValue();
-                            double lng = ((Number) loc.get("longitude")).doubleValue();
-                            runOnUiThread(() -> updateBusMarker(lat, lng));
+                        Log.d(TAG, "Document data: " + documentSnapshot.getData());
+                        Object lastLocObj = documentSnapshot.get("lastLocation");
+                        Log.d(TAG, "lastLocation object type: " + (lastLocObj != null ? lastLocObj.getClass().getSimpleName() : "null"));
+
+                        if (lastLocObj instanceof Map) {
+                            Map<String, Object> loc = (Map<String, Object>) lastLocObj;
+                            if (loc.containsKey("latitude") && loc.containsKey("longitude")) {
+                                double lat = ((Number) loc.get("latitude")).doubleValue();
+                                double lng = ((Number) loc.get("longitude")).doubleValue();
+                                runOnUiThread(() -> updateBusMarker(lat, lng));
+                            } else {
+                                Log.w(TAG, "lastLocation map missing lat/lng keys");
+                            }
+                        } else {
+                            Log.w(TAG, "lastLocation is not a Map: " + lastLocObj);
                         }
+                    } else {
+                        Log.w(TAG, "Document does not exist");
                     }
                 });
     }
