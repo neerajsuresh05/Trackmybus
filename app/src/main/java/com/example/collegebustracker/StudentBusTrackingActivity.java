@@ -14,6 +14,12 @@ import com.google.android.gms.maps.model.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 
+import android.location.Address;
+import android.location.Geocoder;
+import java.util.List;
+import java.util.Locale;
+import java.io.IOException;
+
 import java.util.Map;
 
 public class StudentBusTrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -125,7 +131,27 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
 
     private void updateBusMarker(double latitude, double longitude) {
         LatLng pos = new LatLng(latitude, longitude);
-        tvLocationInfo.setText(String.format("Latitude: %.5f\nLongitude: %.5f", latitude, longitude));
+
+        // Reverse geocoding in background thread
+        new Thread(() -> {
+            String addressStr = String.format(Locale.getDefault(), "Latitude: %.5f\nLongitude: %.5f", latitude, longitude);
+            try {
+                Geocoder geocoder = new Geocoder(StudentBusTrackingActivity.this, Locale.getDefault());
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    addressStr = address.getAddressLine(0);  // Full address
+                } else {
+                    addressStr = "Address not found";
+                }
+            } catch (IOException e) {
+                addressStr = "Unable to get address";
+            }
+
+            final String displayAddress = addressStr;
+            runOnUiThread(() -> tvLocationInfo.setText(displayAddress));
+        }).start();
+
         if (busMarker == null && mMap != null) {
             busMarker = mMap.addMarker(new MarkerOptions()
                     .position(pos)
@@ -136,6 +162,7 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
             busMarker.setPosition(pos);
         }
     }
+
     private void showEmergencyOptions() {
         String[] options = {"Call Police", "Call Ambulance", "Call Child Helpline", "Call Women Helpline"};
         String[] numbers = {POLICE_NUMBER, AMBULANCE_NUMBER, CHILD_HELPLINE_NUMBER, WOMEN_HELPLINE_NUMBER};

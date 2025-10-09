@@ -32,7 +32,7 @@
             android:id="@+id/tvLocationInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Coordinates: Not available"
+            android:text="Location: Not available"
             android:layout_marginTop="5dp" />
 
         <Button
