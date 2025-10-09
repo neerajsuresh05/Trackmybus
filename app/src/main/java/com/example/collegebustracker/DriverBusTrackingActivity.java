@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DriverBusTrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final String POLICE_NUMBER = "100";
+    private static final String AMBULANCE_NUMBER = "108";
+    private static final String CHILD_HELPLINE_NUMBER = "1098";
+    private static final String WOMEN_HELPLINE_NUMBER = "1091";
 
     private static final String TAG = "DriverBusTracking";
     private static final int LOCATION_PERMISSION_REQUEST = 1001;
@@ -83,8 +87,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         });
 
         btnEmergency.setOnClickListener(v ->
-                Toast.makeText(this, "Emergency reporting coming soon.", Toast.LENGTH_SHORT).show()
-        );
+                showEmergencyOptions());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         if (mapFragment != null) mapFragment.getMapAsync(this);
@@ -154,6 +157,22 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 LOCATION_PERMISSION_REQUEST);
+    }
+    private void showEmergencyOptions() {
+        String[] options = {"Call Police", "Call Ambulance", "Call Child Helpline", "Call Women Helpline"};
+        String[] numbers = {POLICE_NUMBER, AMBULANCE_NUMBER, CHILD_HELPLINE_NUMBER, WOMEN_HELPLINE_NUMBER};
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Select Emergency Service")
+                .setItems(options, (dialog, which) -> dialNumber(numbers[which]))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void dialNumber(String number) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(android.net.Uri.parse("tel:" + number));
+        startActivity(intent);
     }
 
     @Override

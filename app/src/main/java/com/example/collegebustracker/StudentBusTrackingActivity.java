@@ -1,5 +1,6 @@
 package com.example.collegebustracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -16,7 +17,10 @@ import com.google.firebase.firestore.*;
 import java.util.Map;
 
 public class StudentBusTrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
-
+    private static final String POLICE_NUMBER = "100";
+    private static final String AMBULANCE_NUMBER = "108";
+    private static final String CHILD_HELPLINE_NUMBER = "1098";
+    private static final String WOMEN_HELPLINE_NUMBER = "1091";
     private static final String TAG = "StudentBusTracking";
     private GoogleMap mMap;
     private Marker busMarker;
@@ -72,8 +76,7 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
         });
 
         btnEmergency.setOnClickListener(v ->
-                Toast.makeText(this, "Emergency feature coming soon.", Toast.LENGTH_SHORT).show()
-        );
+                showEmergencyOptions());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         if (mapFragment != null) mapFragment.getMapAsync(this);
@@ -133,7 +136,22 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
             busMarker.setPosition(pos);
         }
     }
+    private void showEmergencyOptions() {
+        String[] options = {"Call Police", "Call Ambulance", "Call Child Helpline", "Call Women Helpline"};
+        String[] numbers = {POLICE_NUMBER, AMBULANCE_NUMBER, CHILD_HELPLINE_NUMBER, WOMEN_HELPLINE_NUMBER};
 
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Select Emergency Service")
+                .setItems(options, (dialog, which) -> dialNumber(numbers[which]))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void dialNumber(String number) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(android.net.Uri.parse("tel:" + number));
+        startActivity(intent);
+    }
     private void updateStatus(String status) {
         tvStatus.setText(status);
     }
