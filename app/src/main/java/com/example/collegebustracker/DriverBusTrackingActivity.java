@@ -3,6 +3,8 @@ package com.example.collegebustracker;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +24,9 @@ import com.google.android.gms.maps.model.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class DriverBusTrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String POLICE_NUMBER = "100";
@@ -43,6 +46,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
     private String busId;
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,6 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         btnStartStop = findViewById(R.id.btnStartStop);
         btnEmergency = findViewById(R.id.btnEmergency);
 
-        // Fetch assigned busId from Firestore for logged-in driver
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db.collection("users").document(uid)
                 .get()
@@ -86,8 +89,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
             else startTracking();
         });
 
-        btnEmergency.setOnClickListener(v ->
-                showEmergencyOptions());
+        btnEmergency.setOnClickListener(v -> showEmergencyOptions());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         if (mapFragment != null) mapFragment.getMapAsync(this);
@@ -104,7 +106,7 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
             } catch (SecurityException ignored) {
             }
         }
-        LatLng defaultLoc = new LatLng(28.6139, 77.2090);  // Change as needed
+        LatLng defaultLoc = new LatLng(28.6139, 77.2090);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLoc, 16));
     }
 
@@ -120,6 +122,33 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         serviceIntent.putExtra("busId", busId);
         startService(serviceIntent);
         Toast.makeText(this, "Tracking started", Toast.LENGTH_SHORT).show();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) return;
+                for (Location location : locationResult.getLocations()) {
+                    updateMapMarker(location.getLatitude(), location.getLongitude());
+                }
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest, locationCallback, null);
     }
 
     private void stopTracking() {
@@ -128,11 +157,34 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         updateStatus("Tracking stopped");
         stopService(new Intent(this, LocationService.class));
         Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
+
+        if (locationCallback != null) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            locationCallback = null;
+        }
     }
 
     private void updateMapMarker(double latitude, double longitude) {
         LatLng pos = new LatLng(latitude, longitude);
-        tvLocationInfo.setText(String.format("Latitude: %.5f\nLongitude: %.5f", latitude, longitude));
+        // Reverse geocoding in background, correct context!
+        new Thread(() -> {
+            String addressStr = String.format(Locale.getDefault(), "Latitude: %.5f\nLongitude: %.5f", latitude, longitude);
+            try {
+                Geocoder geocoder = new Geocoder(DriverBusTrackingActivity.this, Locale.getDefault());
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    addressStr = address.getAddressLine(0);
+                } else {
+                    addressStr = "Address not found";
+                }
+            } catch (IOException e) {
+                addressStr = "Unable to get address";
+            }
+            final String displayAddress = addressStr;
+            runOnUiThread(() -> tvLocationInfo.setText(displayAddress));
+        }).start();
+
         if (busMarker == null && mMap != null) {
             busMarker = mMap.addMarker(new MarkerOptions()
                     .position(pos)
@@ -158,10 +210,10 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 LOCATION_PERMISSION_REQUEST);
     }
+
     private void showEmergencyOptions() {
         String[] options = {"Call Police", "Call Ambulance", "Call Child Helpline", "Call Women Helpline"};
         String[] numbers = {POLICE_NUMBER, AMBULANCE_NUMBER, CHILD_HELPLINE_NUMBER, WOMEN_HELPLINE_NUMBER};
-
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Select Emergency Service")
                 .setItems(options, (dialog, which) -> dialNumber(numbers[which]))
@@ -180,6 +232,9 @@ public class DriverBusTrackingActivity extends AppCompatActivity implements OnMa
         super.onDestroy();
         if (isTracking) {
             stopService(new Intent(this, LocationService.class));
+            if (locationCallback != null) {
+                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            }
         }
     }
 }
