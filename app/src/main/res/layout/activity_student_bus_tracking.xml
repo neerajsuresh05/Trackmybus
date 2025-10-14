@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -32,8 +33,21 @@
             android:id="@+id/tvLocationInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="Location: Not available"
-            android:layout_marginTop="5dp" />
+            android:textColor="#000000"
+            tools:visibility="visible" />
+        <Button
+            android:id="@+id/btnBoardBus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Board Bus" />
+
+        <Button
+            android:id="@+id/btnLeaveCollege"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Leave College" />
 
         <Button
             android:id="@+id/btnFindBus"
