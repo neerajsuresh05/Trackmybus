@@ -40,7 +40,7 @@
         <!-- Replace with your actual Google Maps API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDR6Y_F6cuNY7ufgAuBqXC0l0nUA1aYJc4" />
+            android:value="AIzaSyDcgnMAB6DsrvKWi8JydMPaILHo3Gu9fLI" />
 
         <!-- Main launcher activity -->
         <activity
