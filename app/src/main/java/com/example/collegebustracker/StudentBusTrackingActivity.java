@@ -64,7 +64,7 @@ public class StudentBusTrackingActivity extends AppCompatActivity implements OnM
     private String busId;
     private FirebaseFirestore db;
 
-    private static final String DIRECTIONS_API_KEY = "AIzaSyDcgnMAB6DsrvKWi8JydMPaILHo3Gu9fLI";
+    private static final String DIRECTIONS_API_KEY = "API_Key";
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1010;
