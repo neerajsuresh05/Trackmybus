@@ -14,7 +14,6 @@
 
     <!-- Foreground service and wake lock for background location tracking -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- Optional: permit discovering local network, DNS queries -->
@@ -41,7 +40,7 @@
         <!-- Replace with your actual Google Maps API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="API_Key" />
+            android:value="YOUR_API_KEY" />
 
         <!-- Main launcher activity -->
         <activity
@@ -58,8 +57,7 @@
         <activity android:name=".LoginActivity" android:exported="false" />
 
         <!-- Bus tracking screen -->
-        <activity android:name=".DriverBusTrackingActivity" android:exported="false"/>
-        <activity android:name=".StudentBusTrackingActivity" android:exported="false"/>
+        <activity android:name=".BusTrackingActivity" android:exported="false" />
 
         <!-- Background service for location tracking -->
         <service
