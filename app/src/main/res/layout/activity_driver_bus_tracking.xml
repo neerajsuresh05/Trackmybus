@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Google Maps fragment -->
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_alignParentTop="true" />
+
+    <!-- Status Text -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_below="@id/mapFragment"
+        android:layout_marginTop="16dp" />
+
+    <!-- Location info Text -->
+    <TextView
+        android:id="@+id/tvLocationInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvStatus"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp" />
+
+    <!-- Start/Stop Tracking Button -->
+    <Button
+        android:id="@+id/btnStartStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Tracking"
+        android:layout_below="@id/tvLocationInfo"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true" />
+
+    <!-- Emergency Button -->
+    <Button
+        android:id="@+id/btnEmergency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Emergency"
+        android:layout_alignBaseline="@id/btnStartStop"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap
+            android:src="@drawable/college_background"
+            android:gravity="fill" />
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#8017468C"
+                android:endColor="#801E88E5"
+                android:angle="135"/>
+        </shape>
+    </item>
+</layer-list>
